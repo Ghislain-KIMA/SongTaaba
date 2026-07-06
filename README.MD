@@ -1,6 +1,6 @@
 # SongTaaba 🎓
 
-> **SongTaaba** (qui signifie *"chercher ensemble"* en mooré) est une plateforme de gestion des opportunités de bourses d'études et de stages. Elle aide les étudiants à découvrir, suivre et postuler aux bourses disponibles localement et internationalement, grâce au scraping automatique de sites spécialisés.
+> **SongTaaba** (qui signifie *"l'entraide"* en mooré) est une plateforme de gestion des opportunités de bourses d'études et de stages. Elle aide les étudiants à découvrir, suivre et postuler aux bourses disponibles localement et internationalement, grâce au scraping automatique de sites spécialisés.
 
 ---
 
@@ -20,11 +20,11 @@
 
 SongTaaba est une application mobile et web permettant à tout étudiant de :
 
-- 🔍 **Rechercher** des bourses et stages par niveau d'études, domaine et date limite
-- 🤖 **Découvrir automatiquement** de nouvelles opportunités via le scraping de sites institutionnels et internationaux
-- 📌 **Suivre** les opportunités qui l'intéressent
-- 🔔 **Recevoir des notifications** pour les nouvelles offres correspondant à son profil
-- 📄 **Préparer ses dossiers** de candidature avec une assistance intégrée
+- **Rechercher** des bourses et stages par niveau d'études, domaine et date limite
+- **Découvrir automatiquement** de nouvelles opportunités via le scraping de sites institutionnels et internationaux
+- **Suivre** les opportunités qui l'intéressent
+- **Recevoir des notifications** pour les nouvelles offres correspondant à son profil
+- **Préparer ses dossiers** de candidature avec une assistance intégrée
 
 ---
 
@@ -77,7 +77,7 @@ SongTaaba est une application mobile et web permettant à tout étudiant de :
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-username/songtaaba.git
+git clone https://github.com/Ghislain-KIMA/SongTaaba.git
 cd songtaaba
 ```
 
@@ -85,10 +85,8 @@ cd songtaaba
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate        # Linux/Mac
-# venv\Scripts\activate         # Windows
-
+conda create --name env-songtaaba python==3.12
+conda activate env-songtaaba
 pip install -r requirements.txt
 ```
 
