@@ -9,7 +9,7 @@
 - [Présentation](#présentation)
 - [Fonctionnalités](#fonctionnalités)
 - [Stack technique](#stack-technique)
-- [Installation & configuration](#installation--configuration)
+- [Installation &amp; configuration](#installation--configuration)
 - [Structure du projet](#structure-du-projet)
 - [Endpoints API](#endpoints-api)
 - [Contribution](#contribution)
@@ -31,21 +31,25 @@ SongTaaba est une application mobile et web permettant à tout étudiant de :
 ## Fonctionnalités
 
 ### Scraping automatique
+
 - Extraction des offres depuis les sites d'institutions éducatives et d'organisations internationales
 - Utilisation de **BeautifulSoup** pour parser les contenus web
 - Planification des scraping par fréquence configurable par site
 
 ### Gestion des opportunités
+
 - Classement par niveau d'études, domaine, pays et date limite
 - Recherche et filtrage avancés
 - Mise à jour automatique des offres
 
 ### Espace étudiant
+
 - Inscription et authentification sécurisée (JWT)
 - Suivi personnalisé des bourses d'intérêt
 - Statuts de candidature : *intéressé → candidat → accepté / refusé*
 
 ### Notifications
+
 - Alertes pour les nouvelles offres correspondant au profil
 - Rappels de deadlines
 
@@ -53,15 +57,15 @@ SongTaaba est une application mobile et web permettant à tout étudiant de :
 
 ## Stack technique
 
-| Couche | Technologie |
-|--------|------------|
-| Backend | Python 3.12 + Flask 3.1.1 |
-| Base de données | PostgreSQL + SQLAlchemy |
-| Migrations | Flask-Migrate (Alembic) |
-| Authentification | JWT (flask-jwt-extended) |
-| Sérialisation | Marshmallow |
-| Scraping | BeautifulSoup4 |
-| Frontend | Flutter |
+| Couche           | Technologie               |
+| ---------------- | ------------------------- |
+| Backend          | Python 3.12 + Flask 3.1.1 |
+| Base de données | PostgreSQL + SQLAlchemy   |
+| Migrations       | Flask-Migrate (Alembic)   |
+| Authentification | JWT (flask-jwt-extended)  |
+| Sérialisation   | Marshmallow               |
+| Scraping         | BeautifulSoup4            |
+| Frontend         | Flutter                   |
 
 ---
 
@@ -93,15 +97,16 @@ pip install -r requirements.txt
 ### 3. Variables d'environnement
 
 ```bash
-cp .env.example .env
+mkdir instance
+touch instance/.env
+New-Item instance/.env -ItemType File # Sur Windows.
+
 ```
 
 Éditez `.env` avec vos valeurs :
 
 ```env
-FLASK_ENV=development
 SECRET_KEY=your-secret-key
-JWT_SECRET_KEY=your-jwt-secret
 DATABASE_URL=postgresql://user:password@localhost:5432/songtaaba
 ```
 
@@ -197,85 +202,53 @@ songtaaba/
 
 ### Authentification
 
-| Méthode | Endpoint | Auth | Description |
-|---------|----------|------|-------------|
-| POST | `/api/users/register` | ❌ | Créer un compte |
-| POST | `/api/auth/login` | ❌ | Se connecter |
-| GET | `/api/auth/me` | ✅ | Profil connecté |
+| Méthode | Endpoint                | Auth | Description      |
+| -------- | ----------------------- | ---- | ---------------- |
+| POST     | `/api/users/register` | ❌   | Créer un compte |
+| POST     | `/api/auth/login`     | ❌   | Se connecter     |
+| GET      | `/api/auth/me`        | ✅   | Profil connecté |
 
 ### Utilisateurs
 
-| Méthode | Endpoint | Auth | Description |
-|---------|----------|------|-------------|
-| GET | `/api/users/` | ✅ | Liste des utilisateurs |
-| GET | `/api/users/<id>` | ✅ | Détail d'un utilisateur |
-| PUT | `/api/users/<id>` | ✅ | Modifier un utilisateur |
-| DELETE | `/api/users/<id>` | ✅ | Supprimer un utilisateur |
+| Méthode | Endpoint            | Auth | Description              |
+| -------- | ------------------- | ---- | ------------------------ |
+| GET      | `/api/users/`     | ✅   | Liste des utilisateurs   |
+| GET      | `/api/users/<id>` | ✅   | Détail d'un utilisateur |
+| PUT      | `/api/users/<id>` | ✅   | Modifier un utilisateur  |
+| DELETE   | `/api/users/<id>` | ✅   | Supprimer un utilisateur |
 
 ### Bourses & Stages
 
-| Méthode | Endpoint | Auth | Description |
-|---------|----------|------|-------------|
-| GET | `/api/bourses/` | ❌ | Liste des opportunités |
-| GET | `/api/bourses/?pays=France` | ❌ | Filtrer par pays |
-| GET | `/api/bourses/?niveau=master` | ❌ | Filtrer par niveau |
-| GET | `/api/bourses/?type=stage` | ❌ | Filtrer par type |
-| GET | `/api/bourses/<id>` | ❌ | Détail d'une opportunité |
-| POST | `/api/bourses/` | ✅ | Créer une opportunité |
-| PUT | `/api/bourses/<id>` | ✅ | Modifier une opportunité |
-| DELETE | `/api/bourses/<id>` | ✅ | Supprimer une opportunité |
+| Méthode | Endpoint                        | Auth | Description                |
+| -------- | ------------------------------- | ---- | -------------------------- |
+| GET      | `/api/bourses/`               | ❌   | Liste des opportunités    |
+| GET      | `/api/bourses/?pays=France`   | ❌   | Filtrer par pays           |
+| GET      | `/api/bourses/?niveau=master` | ❌   | Filtrer par niveau         |
+| GET      | `/api/bourses/?type=stage`    | ❌   | Filtrer par type           |
+| GET      | `/api/bourses/<id>`           | ❌   | Détail d'une opportunité |
+| POST     | `/api/bourses/`               | ✅   | Créer une opportunité    |
+| PUT      | `/api/bourses/<id>`           | ✅   | Modifier une opportunité  |
+| DELETE   | `/api/bourses/<id>`           | ✅   | Supprimer une opportunité |
 
 ### Sites de scraping
 
-| Méthode | Endpoint | Auth | Description |
-|---------|----------|------|-------------|
-| GET | `/api/sites/` | ✅ | Liste des sites |
-| GET | `/api/sites/?actif=true` | ✅ | Sites actifs uniquement |
-| POST | `/api/sites/` | ✅ | Ajouter un site |
-| PUT | `/api/sites/<id>` | ✅ | Modifier un site |
-| DELETE | `/api/sites/<id>` | ✅ | Supprimer un site |
+| Méthode | Endpoint                   | Auth | Description             |
+| -------- | -------------------------- | ---- | ----------------------- |
+| GET      | `/api/sites/`            | ✅   | Liste des sites         |
+| GET      | `/api/sites/?actif=true` | ✅   | Sites actifs uniquement |
+| POST     | `/api/sites/`            | ✅   | Ajouter un site         |
+| PUT      | `/api/sites/<id>`        | ✅   | Modifier un site        |
+| DELETE   | `/api/sites/<id>`        | ✅   | Supprimer un site       |
 
 ### Candidatures (Users ↔ Bourses)
 
-| Méthode | Endpoint | Auth | Description |
-|---------|----------|------|-------------|
-| GET | `/api/users-bourses/user/<id>` | ✅ | Opportunités d'un étudiant |
-| GET | `/api/users-bourses/bourse/<id>` | ✅ | Candidats d'une bourse |
-| POST | `/api/users-bourses/` | ✅ | Marquer un intérêt |
-| PATCH | `/api/users-bourses/<user_id>/<bourse_id>` | ✅ | Changer le statut |
-| DELETE | `/api/users-bourses/<user_id>/<bourse_id>` | ✅ | Retirer un intérêt |
-
-### Statuts de candidature
-
-```
-interessé  →  candidat  →  accepté
-                        →  refusé
-```
-
-### Exemple d'utilisation
-
-```bash
-# 1. Créer un compte
-curl -X POST http://127.0.0.1:5000/api/users/register \
-  -H "Content-Type: application/json" \
-  -d '{"nom": "Ouedraogo", "prenom": "Issa", "email": "issa@example.com", "password": "secret123"}'
-
-# 2. Se connecter
-curl -X POST http://127.0.0.1:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "issa@example.com", "password": "secret123"}'
-
-# 3. Parcourir les bourses (sans token)
-curl http://127.0.0.1:5000/api/bourses/?pays=Canada
-
-# 4. Marquer un intérêt (avec token)
-curl -X POST http://127.0.0.1:5000/api/users-bourses/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"user_id": "uuid-xxx", "bourse_id": "uuid-yyy", "statut": "interessé"}'
-```
-
----
+| Méthode | Endpoint                                     | Auth | Description                  |
+| -------- | -------------------------------------------- | ---- | ---------------------------- |
+| GET      | `/api/users-bourses/user/<id>`             | ✅   | Opportunités d'un étudiant |
+| GET      | `/api/users-bourses/bourse/<id>`           | ✅   | Candidats d'une bourse       |
+| POST     | `/api/users-bourses/`                      | ✅   | Marquer un intérêt         |
+| PATCH    | `/api/users-bourses/<user_id>/<bourse_id>` | ✅   | Changer le statut            |
+| DELETE   | `/api/users-bourses/<user_id>/<bourse_id>` | ✅   | Retirer un intérêt         |
 
 ## Contribution
 
@@ -307,14 +280,14 @@ git push origin feature/ma-fonctionnalite
 
 ### Conventions de commits
 
-| Préfixe | Usage |
-|---------|-------|
-| `feat:` | Nouvelle fonctionnalité |
-| `fix:` | Correction de bug |
-| `docs:` | Documentation |
-| `refactor:` | Refactoring |
-| `scraping:` | Modifications scraping |
-| `test:` | Tests |
+| Préfixe      | Usage                    |
+| ------------- | ------------------------ |
+| `feat:`     | Nouvelle fonctionnalité |
+| `fix:`      | Correction de bug        |
+| `docs:`     | Documentation            |
+| `refactor:` | Refactoring              |
+| `scraping:` | Modifications scraping   |
+| `test:`     | Tests                    |
 
 ---
 
