@@ -165,6 +165,61 @@ def scraper_afd():
     return bourses
 
 
+# ─── Scraper Campus France Burkina ───────────────────────────────────────────
+
+def scraper_campusfrance_burkina():
+    """
+    Scrape les actualités/bourses de Campus France Burkina.
+    Sélecteurs vérifiés sur la vraie structure HTML Drupal.
+    """
+    url = 'https://www.burkina.campusfrance.org/recherche/type/actualite'
+    soup = get_soup(url)
+    if not soup:
+        return []
+
+    bourses = []
+    articles = soup.select('article.node--type-actualite')
+    print(f"[CAMPUSFRANCE] {len(articles)} articles trouvés")
+
+    for article in articles:
+        lien_el = article.select_one('a[rel="bookmark"]')
+        if not lien_el:
+            continue
+
+        nom = lien_el.get('title', '').strip()
+        lien = lien_el.get('href', '')
+
+        if not nom:
+            continue
+
+        # Compléter l'URL relative
+        if lien.startswith('/'):
+            lien = f'https://www.burkina.campusfrance.org{lien}'
+
+        # Filtrer uniquement les bourses
+        mots_cles = ['bourse', 'eiffel', 'excellence', 'financement',
+                     'candidature', 'allocation', 'master', 'doctorat', 'appel']
+        if not any(mot in nom.lower() for mot in mots_cles):
+            print(f"  [IGNORE] {nom}")
+            continue
+
+        print(f"  [OK] {nom}")
+        bourses.append({
+            'nom': nom,
+            'organisme': 'Campus France Burkina',
+            'pays': 'France',
+            'description': 'Opportunité publiée par Campus France Burkina.',
+            'lien_officiel': lien,
+            'type': 'bourse',
+            'niveau': 'Master / Doctorat',
+        })
+
+    return bourses
+
+
+# ─── Sauvegarder les résultats en base ───────────────────────────────────────
+
+
 # ─── Sauvegarder les résultats en base ───────────────────────────────────────
 
 def sauvegarder_bourses(bourses: list, site_id: str) -> int:

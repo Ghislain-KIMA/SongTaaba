@@ -109,10 +109,8 @@ class ApiService {
 
         return {'success': true};
       }
-      return {
-        'success': false,
-        'message': data['error'] ?? 'Erreur de connexion',
-      };
+      // APRÈS
+      return {'success': false, 'message': 'Identifiants incorrects.'};
     } catch (e) {
       return {'success': false, 'message': 'Impossible de joindre le serveur'};
     }
@@ -120,36 +118,24 @@ class ApiService {
 
   // Inscription
   static Future<Map<String, dynamic>> register(
-    String nom,
-    String prenom,
-    String email,
-    String password,
-  ) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/api/users/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'nom': nom,
-          'prenom': prenom,
-          'email': email,
-          'password': password,
-        }),
-      );
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 201) {
-        _userNom = data['nom'];
-        _userEmail = data['email'];
-        return {'success': true};
-      }
-      return {
-        'success': false,
-        'message': data['errors']?.toString() ?? 'Erreur',
-      };
-    } catch (e) {
-      return {'success': false, 'message': 'Impossible de joindre le serveur'};
+    String nom, String prenom, String email, String password) async {
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/users/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'nom': nom, 'prenom': prenom, 'email': email, 'password': password}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 201) {
+      _userNom = '${data['prenom']} ${data['nom']}';
+      _userEmail = data['email'];
+      return {'success': true};
     }
+    return {'success': false, 'message': 'Identifiants incorrects.'};
+  } catch (e) {
+    return {'success': false, 'message': 'Impossible de joindre le serveur'};
   }
+}
 
   // Liste des bourses
   static Future<List<Bourse>> getBourses({String? type, String? pays}) async {
@@ -193,6 +179,20 @@ class ApiService {
         }),
       );
       return response.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Retirer un intérêt
+  static Future<bool> retirerInteret(String bourseId) async {
+    if (_token == null || _userId == null) return false;
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/api/users-bourses/$_userId/$bourseId'),
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+      return response.statusCode == 200;
     } catch (e) {
       return false;
     }
@@ -415,19 +415,16 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       margin: const EdgeInsets.only(top: 8),
                       padding: const EdgeInsets.all(12),
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: const Color(0xFFE74C3C).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: const Color(0xFFE74C3C).withOpacity(0.3),
-                        ),
+                        border: Border.all(color: const Color(0xFFE74C3C).withOpacity(0.3)),
                       ),
                       child: Text(
                         _error!,
-                        style: const TextStyle(
-                          color: Color(0xFFE74C3C),
-                          fontSize: 13,
-                        ),
+                        style: const TextStyle(color: Color(0xFFE74C3C), fontSize: 13),
+                        textAlign: TextAlign.center,
                       ),
                     ),
 
@@ -1195,33 +1192,34 @@ class _HomePageState extends State<HomePage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  final ok = await ApiService.marquerInteret(bourse.id);
+                  bool ok;
+                  String message;
+                  if (bourse.isFavori) {
+                    ok = await ApiService.retirerInteret(bourse.id);
+                    message = ok ? 'Intérêt retiré' : 'Erreur lors du retrait';
+                    if (ok) setState(() => bourse.isFavori = false);
+                  } else {
+                    ok = await ApiService.marquerInteret(bourse.id);
+                    message = ok ? 'Intérêt enregistré !' : 'Déjà enregistré ou erreur';
+                    if (ok) setState(() => bourse.isFavori = true);
+                  }
                   if (!context.mounted) return;
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        ok
-                            ? 'Intérêt enregistré !'
-                            : 'Déjà enregistré ou erreur',
-                      ),
-                      backgroundColor: ok
-                          ? const Color(0xFF2ECC71)
-                          : const Color(0xFFE74C3C),
-                    ),
-                  );
-                  if (ok) setState(() => bourse.isFavori = true);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(message),
+                    backgroundColor: ok ? const Color(0xFF2ECC71) : const Color(0xFFE74C3C),
+                  ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3B8BEB),
+                  backgroundColor: bourse.isFavori
+                      ? const Color(0xFFE74C3C)
+                      : const Color(0xFF3B8BEB),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text(
-                  'Marquer mon intérêt',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                child: Text(
+                  bourse.isFavori ? 'Retirer mon intérêt' : 'Marquer mon intérêt',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ),
             ),
